@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion } = require('mongodb');
 require('dotenv').config()
-const app =express()
+const app = express()
 const port = process.env.PORT || 5000
 
 app.use(cors())
@@ -28,11 +28,27 @@ async function run() {
     // await client.connect();
 
 
+    const usersCollection = client.db('jobPortal').collection('users')
 
 
 
+    // post users 
+    app.post('/users', async (req, res) => {
+      const userInfo = req.body
+      const query = { email: userInfo?.email }
+      const existingUser = await usersCollection.findOne(query)
+      if (existingUser) {
+        return
+      }
+      const result = await usersCollection.insertOne(userInfo)
+      res.send(result)
+    })
 
-
+    // get users 
+    app.get('/users', async(req, res)=>{
+      const result = await usersCollection.find().toArray()
+      res.send(result)
+    })
 
 
 
@@ -56,8 +72,8 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-    res.send('Job Portal Server Is Running.........')
+  res.send('Job Portal Server Is Running.........')
 })
 app.listen(port, () => {
-    console.log(`Job Portal Server Is Running On Port ${port}`);
+  console.log(`Job Portal Server Is Running On Port ${port}`);
 })
