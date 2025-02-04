@@ -29,6 +29,7 @@ async function run() {
 
 
     const usersCollection = client.db('jobPortal').collection('users')
+    const jobsCollection = client.db('jobPortal').collection('jobs')
 
 
 
@@ -77,6 +78,29 @@ async function run() {
       const result = await usersCollection.updateOne(filter, updateDoc)
       res.send(result)
     })
+
+    // post jobs 
+    app.post('/jobs', async (req, res) => {
+      const data = req.body
+      const result = await jobsCollection.insertOne(data)
+      res.send(result)
+    })
+
+    // get all jobs 
+    app.get('/jobs', async (req, res)=>{
+      const result = await jobsCollection.find().toArray()
+      res.send(result)
+    })
+
+
+
+
+
+
+
+
+
+
 
 
 
