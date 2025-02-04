@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const app = express()
 const port = process.env.PORT || 5000
@@ -45,16 +45,36 @@ async function run() {
     })
 
     // get users 
-    app.get('/users', async(req, res)=>{
+    app.get('/users', async (req, res) => {
       const result = await usersCollection.find().toArray()
       res.send(result)
     })
 
     // user get by email 
-    app.get('/users/:email', async (req, res)=>{
+    app.get('/users/:email', async (req, res) => {
       const email = req.params.email
-      const query = {email : email}
+      const query = { email: email }
       const result = await usersCollection.findOne(query)
+      res.send(result)
+    })
+
+    // user data update by email 
+    app.patch('/users/:id', async (req, res) => {
+      const id = req.params.id
+      const currentUser = req.body
+      const filter = { _id: new ObjectId(id) }
+      const updateDoc = {
+        $set: {
+          name: currentUser.name,
+          photo: currentUser.photo,
+          email: currentUser.email,
+          role: currentUser.role,
+          userCreateTime: currentUser.userCreateTime,
+          phone: currentUser.phone,
+          userLocation: currentUser.userLocation
+        }
+      }
+      const result = await usersCollection.updateOne(filter, updateDoc)
       res.send(result)
     })
 
