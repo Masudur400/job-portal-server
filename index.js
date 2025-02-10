@@ -87,22 +87,44 @@ async function run() {
     })
 
     // get all jobs 
-    app.get('/jobs', async (req, res)=>{
+    app.get('/jobs', async (req, res) => {
       const result = await jobsCollection.find().toArray()
       res.send(result)
     })
 
     // job get by id
-    app.get('/jobs/:id', async(req, res)=>{
+    app.get('/jobs/:id', async (req, res) => {
       const id = req.params.id
-      const query = {_id: new ObjectId(id)}
+      const query = { _id: new ObjectId(id) }
       const result = await jobsCollection.findOne(query)
       res.send(result)
     })
 
+    // job post delete by id
+    app.delete('/jobs/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const result = await jobsCollection.deleteOne(query)
+      res.send(result)
+    })
 
-
-
+    // job update by id 
+    app.patch('/jobs/:id', async (req, res) => {
+      const id = req.params.id
+      const data = req.body
+      const filter = { _id: new ObjectId(id) }
+      const updatedDoc = {
+        $set: {
+          jobTitle: data.jobTitle,
+          jobSkills: data.jobSkills,
+          cover: data.cover,
+          jobDescription: data.jobDescription,
+          date: data.date,
+        }
+      }
+      const result = await jobsCollection.updateOne(filter, updatedDoc)
+      res.send(result)
+    })
 
 
 
