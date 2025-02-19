@@ -31,6 +31,7 @@ async function run() {
     const usersCollection = client.db('jobPortal').collection('users')
     const jobsCollection = client.db('jobPortal').collection('jobs')
     const employeesCollection = client.db('jobPortal').collection('employees')
+    const appliesCollection = client.db('jobPortal').collection('applies')
 
 
 
@@ -66,7 +67,7 @@ async function run() {
       const query = { _id: new ObjectId(id) }
       const result = await usersCollection.findOne(query)
       res.send(result)
-  })
+    })
 
     // user data update by email 
     app.patch('/users/:id', async (req, res) => {
@@ -137,31 +138,44 @@ async function run() {
 
 
     // post employee 
-    app.post('/employees', async (req, res)=>{
-      const data = req.body 
+    app.post('/employees', async (req, res) => {
+      const data = req.body
       const result = await employeesCollection.insertOne(data)
       res.send(result)
     })
 
     // get all employee 
-    app.get('/employees', async (req, res) =>{
+    app.get('/employees', async (req, res) => {
       const result = await employeesCollection.find().toArray()
       res.send(result)
     })
 
     // employee get by id 
-    app.get('/employees/:id', async (req, res)=>{
-      const id = req.params.id 
-      const query = {_id : new ObjectId(id)}
+    app.get('/employees/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
       const result = await employeesCollection.findOne(query)
       res.send(result)
     })
 
     // delete employee by id 
-    app.delete('/employees/:id', async (req, res)=>{
-      const id = req.params.id 
-      const query = {_id : new ObjectId(id)}
+    app.delete('/employees/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
       const result = await employeesCollection.deleteOne(query)
+      res.send(result)
+    })
+
+    // post applies 
+    app.post('/applies', async (req, res) => {
+      const data = req.body
+      const result = await appliesCollection.insertOne(data)
+      res.send(result)
+    })
+
+    // get applies 
+    app.get('/applies', async (req, res) => {
+      const result = await appliesCollection.find().toArray()
       res.send(result)
     })
 
