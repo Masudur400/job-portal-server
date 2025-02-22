@@ -187,6 +187,14 @@ async function run() {
       res.send(result)
     })
 
+    // delete apply by id 
+    app.delete('/applies/:id', async(req, res) =>{
+      const id = req.params.id 
+      const query = { _id: new ObjectId(id) }
+      const result = await appliesCollection.deleteOne(query)
+      res.send(result)
+    })
+
 
 
 
