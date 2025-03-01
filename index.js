@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const app = express()
@@ -34,6 +35,32 @@ async function run() {
     const appliesCollection = client.db('jobPortal').collection('applies')
 
 
+
+
+
+
+
+    // jwt api 
+    app.post('/jwt', async (req, res) => {
+      const user = req.body
+      const token = jwt.sign(user, process.env.AccessToken, { expiresIn: '3h' })
+      res.send({ token })
+    })
+
+    // verify token 
+    const verifyToken = (req, res, next) => {
+      if (!req.headers.authorization) {
+        return res.status(401).send({ message: 'unauthorized access !' })
+      }
+      const token = req.headers.authorization.split(' ')[1]
+      jwt.verify(token, process.env.AccessToken, (error, decoded) => {
+        if (error) {
+          return res.status(401).send({ message: 'unauthorized access !' })
+        }
+        req.decoded = decoded
+        next()
+      })
+    }
 
     // post users 
     app.post('/users', async (req, res) => {
@@ -70,7 +97,7 @@ async function run() {
     })
 
     // user data update by email 
-    app.patch('/users/:id', async (req, res) => {
+    app.patch('/users/:id',verifyToken, async (req, res) => {
       const id = req.params.id
       const currentUser = req.body
       const filter = { _id: new ObjectId(id) }
@@ -90,7 +117,7 @@ async function run() {
     })
 
     // post jobs 
-    app.post('/jobs', async (req, res) => {
+    app.post('/jobs',verifyToken, async (req, res) => {
       const data = req.body
       const result = await jobsCollection.insertOne(data)
       res.send(result)
@@ -111,7 +138,7 @@ async function run() {
     })
 
     // job post delete by id
-    app.delete('/jobs/:id', async (req, res) => {
+    app.delete('/jobs/:id',verifyToken, async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await jobsCollection.deleteOne(query)
@@ -119,7 +146,7 @@ async function run() {
     })
 
     // job update by id 
-    app.patch('/jobs/:id', async (req, res) => {
+    app.patch('/jobs/:id',verifyToken, async (req, res) => {
       const id = req.params.id
       const data = req.body
       const filter = { _id: new ObjectId(id) }
@@ -138,7 +165,7 @@ async function run() {
 
 
     // post employee 
-    app.post('/employees', async (req, res) => {
+    app.post('/employees',verifyToken, async (req, res) => {
       const data = req.body
       const result = await employeesCollection.insertOne(data)
       res.send(result)
@@ -159,7 +186,7 @@ async function run() {
     })
 
     // delete employee by id 
-    app.delete('/employees/:id', async (req, res) => {
+    app.delete('/employees/:id',verifyToken, async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await employeesCollection.deleteOne(query)
@@ -183,13 +210,13 @@ async function run() {
     app.get('/applies/:email', async (req, res) => {
       const email = req.params.email
       const query = { userEmail: email }
-      const  result = await appliesCollection.find(query).toArray()
+      const result = await appliesCollection.find(query).toArray()
       res.send(result)
     })
 
     // delete apply by id 
-    app.delete('/applies/:id', async(req, res) =>{
-      const id = req.params.id 
+    app.delete('/applies/:id', async (req, res) => {
+      const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await appliesCollection.deleteOne(query)
       res.send(result)
