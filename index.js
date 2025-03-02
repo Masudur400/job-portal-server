@@ -62,6 +62,18 @@ async function run() {
       })
     }
 
+     // verify Admin and Moderator 
+     const verifyAdminAndModerator = async (req, res, next) => {
+      const email = req?.decoded?.email
+      const query = { email: email }
+      const user = await usersCollection.findOne(query)
+      const isAdminAndModerator = user?.role === 'Moderator' || user?.role === "Admin"
+      if (!isAdminAndModerator) {
+          return res.status(403).send({ message: 'forbidden access' })
+      }
+      next()
+  }
+
     // post users 
     app.post('/users', async (req, res) => {
       const userInfo = req.body
