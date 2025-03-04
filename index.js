@@ -62,29 +62,41 @@ async function run() {
       })
     }
 
-     // verify Admin and Moderator 
-     const verifyAdminAndModerator = async (req, res, next) => {
+    // verify Admin and Moderator 
+    const verifyAdminAndModerator = async (req, res, next) => {
       const email = req?.decoded?.email
       const query = { email: email }
       const user = await usersCollection.findOne(query)
       const isAdminAndModerator = user?.role === 'Moderator' || user?.role === "Admin"
       if (!isAdminAndModerator) {
-          return res.status(403).send({ message: 'forbidden access' })
+        return res.status(403).send({ message: 'forbidden access' })
       }
       next()
-  }
-
-  //verify Admin 
-  const verifyAdmin = async (req, res, next) => {
-    const email = req?.decoded?.email
-    const query = { email: email }
-    const user = await usersCollection.findOne(query)
-    const isAdmin = user?.role === 'Admin'
-    if (!isAdmin) {
-        return res.status(403).send({ message: 'forbidden access' })
     }
-    next()
-}
+
+    //verify Admin 
+    const verifyAdmin = async (req, res, next) => {
+      const email = req?.decoded?.email
+      const query = { email: email }
+      const user = await usersCollection.findOne(query)
+      const isAdmin = user?.role === 'Admin'
+      if (!isAdmin) {
+        return res.status(403).send({ message: 'forbidden access' })
+      }
+      next()
+    }
+
+    // get admin user  
+    app.get('/users/admin/:email', async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const user = await usersCollection.findOne(query);
+      let admin = false;
+      if (user) {
+        admin = user?.role === "Admin";
+      }
+      res.send({ admin })
+    })
 
     // post users 
     app.post('/users', async (req, res) => {
@@ -121,7 +133,7 @@ async function run() {
     })
 
     // user data update by email 
-    app.patch('/users/:id',verifyToken, async (req, res) => {
+    app.patch('/users/:id', verifyToken, async (req, res) => {
       const id = req.params.id
       const currentUser = req.body
       const filter = { _id: new ObjectId(id) }
@@ -141,7 +153,7 @@ async function run() {
     })
 
     // post jobs 
-    app.post('/jobs',verifyToken, async (req, res) => {
+    app.post('/jobs', verifyToken, async (req, res) => {
       const data = req.body
       const result = await jobsCollection.insertOne(data)
       res.send(result)
@@ -162,7 +174,7 @@ async function run() {
     })
 
     // job post delete by id
-    app.delete('/jobs/:id',verifyToken, async (req, res) => {
+    app.delete('/jobs/:id', verifyToken, async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await jobsCollection.deleteOne(query)
@@ -170,7 +182,7 @@ async function run() {
     })
 
     // job update by id 
-    app.patch('/jobs/:id',verifyToken, async (req, res) => {
+    app.patch('/jobs/:id', verifyToken, async (req, res) => {
       const id = req.params.id
       const data = req.body
       const filter = { _id: new ObjectId(id) }
@@ -189,7 +201,7 @@ async function run() {
 
 
     // post employee 
-    app.post('/employees',verifyToken, async (req, res) => {
+    app.post('/employees', verifyToken, async (req, res) => {
       const data = req.body
       const result = await employeesCollection.insertOne(data)
       res.send(result)
@@ -210,7 +222,7 @@ async function run() {
     })
 
     // delete employee by id 
-    app.delete('/employees/:id',verifyToken, async (req, res) => {
+    app.delete('/employees/:id', verifyToken, async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await employeesCollection.deleteOne(query)
