@@ -98,6 +98,18 @@ async function run() {
       res.send({ admin })
     })
 
+     // get moderator user 
+     app.get('/users/moderator/:email', async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const user = await usersCollection.findOne(query);
+      let moderator = false;
+      if (user) {
+          moderator = user?.role === "Moderator";
+      }
+      res.send({ moderator })
+  })
+
     // post users 
     app.post('/users', async (req, res) => {
       const userInfo = req.body
