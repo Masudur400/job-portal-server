@@ -33,6 +33,7 @@ async function run() {
     const jobsCollection = client.db('jobPortal').collection('jobs')
     const employeesCollection = client.db('jobPortal').collection('employees')
     const appliesCollection = client.db('jobPortal').collection('applies')
+    const projectsCollection = client.db('jobPortal').collection('projects')
 
 
 
@@ -98,17 +99,17 @@ async function run() {
       res.send({ admin })
     })
 
-     // get moderator user 
-     app.get('/users/moderator/:email', async (req, res) => {
+    // get moderator user 
+    app.get('/users/moderator/:email', async (req, res) => {
       const email = req.params.email;
       const query = { email: email };
       const user = await usersCollection.findOne(query);
       let moderator = false;
       if (user) {
-          moderator = user?.role === "Moderator";
+        moderator = user?.role === "Moderator";
       }
       res.send({ moderator })
-  })
+    })
 
     // post users 
     app.post('/users', async (req, res) => {
@@ -270,6 +271,18 @@ async function run() {
       res.send(result)
     })
 
+    // post project 
+    app.post('/projects', async (req, res) => {
+      const data = req.body
+      const result = await projectsCollection.insertOne(data)
+      res.send(result)
+    })
+
+    // get project 
+    app.get('/projects', async (req, res)=>{
+      const result = await projectsCollection.find().toArray()
+      res.send(result)
+    })
 
 
 
