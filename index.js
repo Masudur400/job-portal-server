@@ -284,6 +284,22 @@ async function run() {
       res.send(result)
     })
 
+    // get project by id 
+    app.get('/projects/:id', async (req, res)=>{
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const result = await projectsCollection.findOne(query)
+      res.send(result)
+    })
+
+    // delete project by id 
+    app.delete('/projects/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const result = await projectsCollection.deleteOne(query)
+      res.send(result)
+    })
+
 
 
 
