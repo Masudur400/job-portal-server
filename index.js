@@ -300,6 +300,16 @@ async function run() {
       res.send(result)
     })
 
+    // all collection count 
+    app.get('/allCount', async (req, res)=>{
+      const usersCount = await usersCollection.estimatedDocumentCount()
+      const employeeCount = await employeesCollection.estimatedDocumentCount()
+      const projectsCount = await projectsCollection.estimatedDocumentCount()
+      const jobsCount = await jobsCollection.estimatedDocumentCount()
+      const appliesCount = await appliesCollection.estimatedDocumentCount()
+      res.send({usersCount, employeeCount, projectsCount, jobsCount, appliesCount})
+    })
+
 
 
 
