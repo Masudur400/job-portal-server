@@ -279,13 +279,13 @@ async function run() {
     })
 
     // get project 
-    app.get('/projects', async (req, res)=>{
+    app.get('/projects', async (req, res) => {
       const result = await projectsCollection.find().toArray()
       res.send(result)
     })
 
     // get project by id 
-    app.get('/projects/:id', async (req, res)=>{
+    app.get('/projects/:id', async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await projectsCollection.findOne(query)
@@ -301,13 +301,13 @@ async function run() {
     })
 
     // all collection count 
-    app.get('/allCount', async (req, res)=>{
+    app.get('/allCount', async (req, res) => {
       const usersCount = await usersCollection.estimatedDocumentCount()
       const employeeCount = await employeesCollection.estimatedDocumentCount()
       const projectsCount = await projectsCollection.estimatedDocumentCount()
       const jobsCount = await jobsCollection.estimatedDocumentCount()
       const appliesCount = await appliesCollection.estimatedDocumentCount()
-      res.send({usersCount, employeeCount, projectsCount, jobsCount, appliesCount})
+      res.send({ usersCount, employeeCount, projectsCount, jobsCount, appliesCount })
     })
 
 
